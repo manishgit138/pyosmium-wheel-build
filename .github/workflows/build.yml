@@ -106,7 +106,7 @@ jobs:
       - uses: actions/upload-artifact@v2
         with:
           path: ./wheelhouse/*.whl
-  test-aarch64:
+  build-test-aarch64:
     name: "Test ${{ matrix.pyver }} aarch64"
     strategy:
       matrix:
@@ -118,8 +118,37 @@ jobs:
       py: /opt/python/${{ matrix.pyver }}/bin/python
       img: quay.io/pypa/manylinux2014_${{ matrix.arch }}
     steps:
-    - name: Checkout
-      uses: actions/checkout@v2
+    - uses: actions/checkout@v2
+      with:
+          submodules: true
+          fetch-depth: 1
+    - uses: actions/setup-python@v2
+      name: Install Python
+      with:
+        python-version: '3.7'
+
+    - name: Install cibuildwheel
+      run: |
+        python -m pip install cibuildwheel==1.7.1
+    - name: Build wheels
+      env:
+        CIBW_ARCHS_LINUX: "aarch64"
+        CIBW_SKIP: "cp27-* cp35-* pp* cp36-manylinux_i686"
+        CIBW_BEFORE_BUILD_LINUX: "/bin/bash cibuild/linux_steps.sh"
+      run: |
+        python -m cibuildwheel --output-dir wheelhouse pyosmium
+  
+    - name: Test aarch64 wheel
+      run: |
+        docker run --rm -v ${{ github.workspace }}:/ws:rw --workdir=/ws \
+          quay.io/pypa/manylinux2014_aarch64 \
+          bash -exc '/opt/python/${{ matrix.pyver }}/bin/python -m pip install virtualenv && /opt/python/${{ matrix.pyver }}/bin/python -m venv .env && \
+          source .env/bin/activate && \
+          python --version && \
+          python -m pip install nose mock shapely && \
+          python -m pip install osmium --no-index --find-links file:///$(pwd)/wheelhouse/ && \
+          cd pyosmium/test && rm -rf ../build && python -m nose && \
+          deactivate'
     - name: check wheel
       run: |
           ls ./wheelhouse/
