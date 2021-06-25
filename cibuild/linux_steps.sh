@@ -54,7 +54,8 @@ ln -sf $(pwd)/protozero pyosmium/contrib/protozero
 
 #
 if [ "$(uname -m)" == "aarch64" ]; then
-    yum install -y libtool expat-devel boost-devel zlib-devel
+    #yum install -y libtool expat-devel boost-devel zlib-devel
+    yum install -y expat-devel boost-devel zlib-devel
 else
     yum install -y sparsehash-devel expat-devel boost-devel zlib-devel
 fi
