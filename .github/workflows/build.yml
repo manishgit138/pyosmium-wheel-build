@@ -54,6 +54,7 @@ jobs:
           python-version: 3.6
 
       - name: Test wheel 3.6
+        if: ${{ matrix.arch != 'aarch64' }}
         run: |
           python --version
           python -m pip install nose mock shapely
@@ -66,6 +67,7 @@ jobs:
           python-version: 3.7
 
       - name: Test wheel 3.7
+        if: ${{ matrix.arch != 'aarch64' }}
         run: |
           python --version
           python -m pip install nose mock shapely
@@ -78,6 +80,7 @@ jobs:
           python-version: 3.8
 
       - name: Test wheel 3.8
+        if: ${{ matrix.arch != 'aarch64' }}
         run: |
           python --version
           python -m pip install nose mock shapely
@@ -90,7 +93,7 @@ jobs:
           python-version: 3.9
 
       - name: Test wheel 3.9
-        if: matrix.os != 'macos-10.15' # disabled because https://github.com/actions/virtual-environments/issues/2322
+        if: matrix.os != 'macos-10.15' && ${{ matrix.arch != 'aarch64' }} # disabled because https://github.com/actions/virtual-environments/issues/2322
         run: |
           python --version
           python -m pip install nose mock shapely
@@ -103,4 +106,3 @@ jobs:
       - uses: actions/upload-artifact@v2
         with:
           path: ./wheelhouse/*.whl
-
