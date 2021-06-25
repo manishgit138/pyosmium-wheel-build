@@ -33,7 +33,7 @@ jobs:
       
       - name: Install cibuildwheel
         run: |
-          python -m pip install cibuildwheel==1.7.1
+          python -m pip install cibuildwheel==1.11.0
 
       - name: Build wheels
         env:
@@ -96,6 +96,9 @@ jobs:
           python -m pip install osmium --no-index --find-links file:///$(pwd)/wheelhouse/
           (cd pyosmium/test && rm -rf ../build && python -m nose)
 
+      - name: check wheel
+        run: |
+          ls ./wheelhouse/
       - uses: actions/upload-artifact@v2
         with:
           path: ./wheelhouse/*.whl
