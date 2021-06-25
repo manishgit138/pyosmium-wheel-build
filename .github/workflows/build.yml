@@ -11,7 +11,6 @@ jobs:
         # os: [ubuntu-18.04, windows-latest, macos-latest] # skip windows 
         os: [ubuntu-20.04, macos-10.15]
         arch: [auto, aarch64]
-        pyver: [cp36-cp36m, cp37-cp37m, cp38-cp38, cp39-cp39]
         exclude:
           - os: macos-10.15
             arch: aarch64
@@ -101,21 +100,26 @@ jobs:
           python -m pip install osmium --no-index --find-links file:///$(pwd)/wheelhouse/
           (cd pyosmium/test && rm -rf ../build && python -m nose)
 
-      - name: Test aarch64 wheel
-        if: ${{ matrix.arch == 'aarch64' }}
-        run: |
-          docker run --rm -v ${{ github.workspace }}:/ws:rw --workdir=/ws \
-            quay.io/pypa/manylinux2014_aarch64 \
-            bash -exc '/opt/python/${{ matrix.pyver }}/bin/python -m pip install virtualenv && /opt/python/${{ matrix.pyver }}/bin/python -m venv .env && \
-            source .env/bin/activate && \
-            python --version && \
-            python -m pip install nose mock shapely && \
-            python -m pip install osmium --no-index --find-links file:///$(pwd)/wheelhouse/ && \
-            cd pyosmium/test && rm -rf ../build && python -m nose && \
-            deactivate'
       - name: check wheel
         run: |
           ls ./wheelhouse/
       - uses: actions/upload-artifact@v2
         with:
           path: ./wheelhouse/*.whl
+  test-aarch64:
+    name: "Test ${{ matrix.pyver }} aarch64"
+    strategy:
+      matrix:
+        pyver: [cp36-cp36m, cp37-cp37m, cp38-cp38, cp39-cp39]
+        arch: [aarch64]
+      fail-fast: false
+    runs-on: ubuntu-latest
+    env:
+      py: /opt/python/${{ matrix.pyver }}/bin/python
+      img: quay.io/pypa/manylinux2014_${{ matrix.arch }}
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+    - name: check wheel
+      run: |
+          ls ./wheelhouse/
