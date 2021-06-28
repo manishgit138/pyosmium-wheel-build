@@ -149,6 +149,7 @@ jobs:
           bash -exc '/opt/python/${{ matrix.pyver }}/bin/python -m pip install virtualenv && /opt/python/${{ matrix.pyver }}/bin/python -m venv .env && \
           source .env/bin/activate && \
           python --version && \
+          yum -y update && yum -y install geos && \
           #yum -y update && yum -y install geos-devel && \
           #python -m pip install nose mock shapely && \
           python -m pip install nose mock shapely && \
