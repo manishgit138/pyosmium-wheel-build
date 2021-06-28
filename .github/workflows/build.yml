@@ -151,7 +151,7 @@ jobs:
           python --version && \
           #yum -y update && yum -y install geos-devel && \
           #python -m pip install nose mock shapely && \
-          python -m pip install nose mock && \
+          python -m pip install nose mock shapely && \
           ls ./wheelhouse/ && \
           python -m pip install osmium --no-index --find-links file:///$(pwd)/wheelhouse/ && \
           cd pyosmium/test && rm -rf ../build && python -m nose && \
