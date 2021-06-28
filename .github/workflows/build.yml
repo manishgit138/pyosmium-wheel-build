@@ -42,8 +42,8 @@ jobs:
           CIBW_BEFORE_BUILD_LINUX: "/bin/bash cibuild/linux_steps.sh"
           CIBW_BEFORE_BUILD_MACOS: "/bin/bash cibuild/macos_steps.sh"
           #CIBW_BEFORE_ALL_LINUX: "yum -y update && yum install -y libtool"
-          # CIBW_TEST_COMMAND: "cd {project}/pyosmium/test && rm -rf ../build && python -m nose"
-          # CIBW_BEFORE_TEST: "pip install nose mock shapely"
+          CIBW_TEST_COMMAND: "cd {project}/pyosmium/test && rm -rf ../build && python -m nose"
+          CIBW_BEFORE_TEST: "pip install nose mock shapely"
 
         run: |
           python -m cibuildwheel --output-dir wheelhouse pyosmium
@@ -110,7 +110,7 @@ jobs:
     name: "Test ${{ matrix.pyver }} aarch64"
     strategy:
       matrix:
-        pyver: [cp36-cp36m, cp37-cp37m, cp38-cp38, cp39-cp39]
+        pyver: [cp36-cp36m, cp37-cp37m]
         arch: [aarch64]
       fail-fast: false
     runs-on: ubuntu-latest
@@ -154,7 +154,8 @@ jobs:
           #python -m pip install nose mock shapely && \
           python -m pip install nose mock shapely && \
           ls ./wheelhouse/ && \
-          python -m pip install osmium --no-index --find-links file:///$(pwd)/wheelhouse/ && \
+          pwd && \
+          python -m pip install osmium --no-index --find-links file:///./wheelhouse/ && \
           cd pyosmium/test && rm -rf ../build && python -m nose && \
           deactivate'
     - name: check wheel
