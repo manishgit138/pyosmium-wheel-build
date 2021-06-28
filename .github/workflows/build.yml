@@ -42,6 +42,7 @@ jobs:
           CIBW_BEFORE_BUILD_LINUX: "/bin/bash cibuild/linux_steps.sh"
           CIBW_BEFORE_BUILD_MACOS: "/bin/bash cibuild/macos_steps.sh"
           #CIBW_BEFORE_ALL_LINUX: "yum -y update && yum install -y libtool"
+          CIBW_BEFORE_ALL_LINUX: yum -y update && yum -y install geos-devel geos
           CIBW_TEST_COMMAND: "cd {project}/pyosmium/test && rm -rf ../build && python -m nose"
           CIBW_BEFORE_TEST: "pip install nose mock shapely"
 
@@ -149,10 +150,10 @@ jobs:
           bash -exc '/opt/python/${{ matrix.pyver }}/bin/python -m pip install virtualenv && /opt/python/${{ matrix.pyver }}/bin/python -m venv .env && \
           source .env/bin/activate && \
           python --version && \
-          yum -y update && yum -y install geos && \
+          #yum -y update && yum -y install geos && \
           #yum -y update && yum -y install geos-devel && \
           #python -m pip install nose mock shapely && \
-          python -m pip install nose mock shapely && \
+          #python -m pip install nose mock shapely && \
           ls ./wheelhouse/ && \
           pwd && \
           python -m pip install osmium --no-index --find-links file:///./wheelhouse/ && \
