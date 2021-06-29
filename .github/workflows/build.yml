@@ -10,7 +10,7 @@ jobs:
       matrix:
         # os: [ubuntu-18.04, windows-latest, macos-latest] # skip windows 
         os: [ubuntu-20.04, macos-10.15]
-        arch: [auto]
+        arch: [auto, aarch64]
         exclude:
           - os: macos-10.15
             arch: aarch64
@@ -42,9 +42,9 @@ jobs:
           CIBW_BEFORE_BUILD_LINUX: "/bin/bash cibuild/linux_steps.sh"
           CIBW_BEFORE_BUILD_MACOS: "/bin/bash cibuild/macos_steps.sh"
           #CIBW_BEFORE_ALL_LINUX: "yum -y update && yum install -y libtool"
-          CIBW_BEFORE_ALL_LINUX: yum -y update && yum -y install geos-devel geos
-          CIBW_TEST_COMMAND: "cd {project}/pyosmium/test && rm -rf ../build && python -m nose"
-          CIBW_BEFORE_TEST: "pip install nose mock shapely"
+          #CIBW_BEFORE_ALL_LINUX: yum -y update && yum -y install geos-devel geos
+          #CIBW_TEST_COMMAND: "cd {project}/pyosmium/test && rm -rf ../build && python -m nose"
+          #CIBW_BEFORE_TEST: "pip install nose mock shapely"
 
         run: |
           python -m cibuildwheel --output-dir wheelhouse pyosmium
@@ -101,6 +101,20 @@ jobs:
           python -m pip install osmium --no-index --find-links file:///$(pwd)/wheelhouse/
           (cd pyosmium/test && rm -rf ../build && python -m nose)
 
+      - name: Test aarch64 wheel 3.8
+        if: ${{ matrix.arch == 'aarch64' }}
+        run: |
+          docker run --rm -v ${{ github.workspace }}:/ws:rw --workdir=/ws \
+            ubuntu@sha256:aba80b77e27148d99c034a987e7da3a287ed455390352663418c0f2ed40417fe \
+            bash -exc 'apt-get update && apt-get -y install python3 python3-pip python3-venv && \
+            python3 -m pip install virtualenv && python3 -m venv .env && \
+            source .env/bin/activate && \
+            python --version && \
+            ls ./wheelhouse/ && \
+            python -m pip install nose mock shapely && \
+            python -m pip install osmium --no-index --find-links file:///$(pwd)/wheelhouse/ && \
+            cd pyosmium/test && rm -rf ../build && python -m nose && \
+            deactivate'
       - name: check wheel
         run: |
           ls ./wheelhouse/
