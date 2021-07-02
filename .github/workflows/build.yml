@@ -183,7 +183,7 @@ jobs:
           #yum -y update && yum -y install geos-devel && \
           #python -m pip install nose mock shapely && \
           #python -m pip install nose mock shapely && \
-          yum install https://download1.rpmfusion.org/free/el/rpmfusion-free-release-7.noarch.rpm && \
+          yum -y install https://download1.rpmfusion.org/free/el/rpmfusion-free-release-7.noarch.rpm && \
           yum -y install geos-devel
           ls ./wheelhouse/ && \
           pwd && \
